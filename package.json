@@ -1,0 +1,20 @@
+{
+  "name": "testbroker",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "module": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.6.8",
+    "bybit-api": "^3.10.1",
+    "dotenv": "^16.4.5",
+    "ws": "^8.16.0"
+  }
+}
