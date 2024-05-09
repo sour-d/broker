@@ -8,7 +8,7 @@ const getMessage = (symbol, timeFrame) => {
   });
 };
 
-export default class Stream extends EventEmitter {
+export default class LiveStream extends EventEmitter {
   constructor(symbols = []) {
     super();
     this.url = "wss://stream-testnet.bybit.com/v5/public/spot";
