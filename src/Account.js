@@ -35,6 +35,4 @@ const getBalance = async () => {
   return balance;
 };
 
-console.log(await getBalance());
-
 export default getBalance;
