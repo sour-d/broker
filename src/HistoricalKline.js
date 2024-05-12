@@ -32,8 +32,12 @@ const formatResponse = (response) => {
   return response.result.list
     .map((kline) => {
       return {
-        Date: dayjs(kline[0]).tz("Asia/Kolkata").format("YYYY-MM-DD"),
-        Time: dayjs(kline[0]).tz("Asia/Kolkata").format("HH:mm:ss"),
+        Date: dayjs(+kline[0])
+          .tz("Asia/Kolkata")
+          .format("YYYY-MM-DD"),
+        Time: dayjs(+kline[0])
+          .tz("Asia/Kolkata")
+          .format("HH:mm:ss"),
         DateUnix: +kline[0],
         Open: kline[1],
         High: kline[2],
