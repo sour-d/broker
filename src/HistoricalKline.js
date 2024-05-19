@@ -44,11 +44,11 @@ const formatResponse = (response) => {
           .tz("Asia/Kolkata")
           .format("HH:mm:ss"),
         DateUnix: +kline[0],
-        Open: kline[1],
-        High: kline[2],
-        Low: kline[3],
-        Close: kline[4],
-        Volume: kline[5],
+        Open: +kline[1],
+        High: +kline[2],
+        Low: +kline[3],
+        Close: +kline[4],
+        Volume: +kline[5],
       };
     })
     .reverse();
