@@ -33,7 +33,10 @@ export default class LiveStream extends EventEmitter {
 
   _onMessage(message) {
     const data = JSON.parse(message.data);
+    if (data.ret_msg === "subscribe") return;
+
     const topic = data.topic;
+    const olhc = data.data[0];
 
     if (data.success === false && data.ret_msg.startsWith("Invalid symbol :")) {
       const topic = data.ret_msg
@@ -45,11 +48,11 @@ export default class LiveStream extends EventEmitter {
     this.emit(topic, {
       type: "quote",
       data: {
-        open: data.open,
-        close: data.close,
-        high: data.high,
-        low: data.low,
-        volume: data.volume,
+        open: olhc.open,
+        close: olhc.close,
+        high: olhc.high,
+        low: olhc.low,
+        volume: olhc.volume,
       },
       topic,
     });
