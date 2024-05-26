@@ -42,7 +42,17 @@ export default class LiveStream extends EventEmitter {
         .replace(/\]/g, "");
       return this.emit(topic, { type: "error", message: data.ret_msg, topic });
     }
-    this.emit(topic, { type: "quote", data, topic });
+    this.emit(topic, {
+      type: "quote",
+      data: {
+        open: data.open,
+        close: data.close,
+        high: data.high,
+        low: data.low,
+        volume: data.volume,
+      },
+      topic,
+    });
   }
 
   _onError(error) {
