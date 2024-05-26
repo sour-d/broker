@@ -37,18 +37,18 @@ const formatResponse = (response) => {
   return response.result.list
     .map((kline) => {
       return {
-        Date: dayjs(+kline[0])
+        date: dayjs(+kline[0])
           .tz("Asia/Kolkata")
           .format("YYYY-MM-DD"),
-        Time: dayjs(+kline[0])
+        time: dayjs(+kline[0])
           .tz("Asia/Kolkata")
           .format("HH:mm:ss"),
-        DateUnix: +kline[0],
-        Open: +kline[1],
-        High: +kline[2],
-        Low: +kline[3],
-        Close: +kline[4],
-        Volume: +kline[5],
+        dateUnix: +kline[0],
+        open: +kline[1],
+        high: +kline[2],
+        low: +kline[3],
+        close: +kline[4],
+        volume: +kline[5],
       };
     })
     .reverse();
