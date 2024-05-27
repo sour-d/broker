@@ -10,13 +10,14 @@ dotenv.config();
 dayjs.extend(utc);
 dayjs.extend(timezone);
 
-const restClient = new RestClientV5({
-  key: process.env.TESTNET_API_KEY,
-  secret: process.env.TESTNET_API_SECRET,
-  parseAPIRateLimits: true,
-  testnet: true,
-  // demoTrading: true,
-});
+const restClient = (testnet) =>
+  new RestClientV5({
+    key: process.env.TESTNET_API_KEY,
+    secret: process.env.TESTNET_API_SECRET,
+    parseAPIRateLimits: true,
+    testnet: testnet,
+    // demoTrading: true,
+  });
 
 const getNewEnd = (start, end, addOneSecond = false) => {
   let newStart = start;
@@ -54,12 +55,18 @@ const formatResponse = (response) => {
     .reverse();
 };
 
-const HistoricalKline = async (symbol, interval, start, end) => {
+const HistoricalKline = async (
+  symbol,
+  interval,
+  start,
+  end,
+  testnet = false
+) => {
   let allData = [];
   let fetchTill = getNewEnd(start, end);
 
   while (end >= fetchTill) {
-    await restClient
+    await restClient(testnet)
       .getKline({ symbol, interval, start, end: fetchTill, limit: 1000 })
       .then((response) => {
         const data = formatResponse(response);
