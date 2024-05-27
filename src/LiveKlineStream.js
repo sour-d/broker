@@ -48,11 +48,11 @@ export default class LiveStream extends EventEmitter {
     this.emit(topic, {
       type: "quote",
       data: {
-        open: olhc.open,
-        close: olhc.close,
-        high: olhc.high,
-        low: olhc.low,
-        volume: olhc.volume,
+        open: +olhc.open,
+        close: +olhc.close,
+        high: +olhc.high,
+        low: +olhc.low,
+        volume: +olhc.volume,
       },
       topic,
     });
