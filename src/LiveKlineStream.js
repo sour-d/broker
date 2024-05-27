@@ -9,9 +9,11 @@ const getMessage = (symbol, timeFrame) => {
 };
 
 export default class LiveStream extends EventEmitter {
-  constructor(symbols = []) {
+  constructor(symbols = [], testnet) {
     super();
-    this.url = "wss://stream-testnet.bybit.com/v5/public/spot";
+    this.url = testnet
+      ? "wss://stream-testnet.bybit.com/v5/public/spot"
+      : "wss://stream.bybit.com/v5/public/linear";
     this.ws = null;
     this.subscribed = {};
 
