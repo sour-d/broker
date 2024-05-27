@@ -35,7 +35,7 @@ export default class LiveStream extends EventEmitter {
 
   _onMessage(message) {
     const data = JSON.parse(message.data);
-    if (data.ret_msg === "subscribe") return;
+    if (data.op === "subscribe") return;
 
     const topic = data.topic;
     const olhc = data.data[0];
