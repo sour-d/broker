@@ -45,6 +45,7 @@ export default class LiveStream extends EventEmitter {
         .replace(/\]/g, "");
       return this.emit(topic, { type: "error", message: data.ret_msg, topic });
     }
+    if (!olhc.confirm) return;
     this.emit(topic, {
       type: "quote",
       data: {
