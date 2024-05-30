@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const testnet = process.env.USE_TESTNET === "true";
+const symbol = process.env.DEFAULT_SYMBOL;
 
 const client = (testnet) => {
   const args = {
@@ -19,13 +20,13 @@ const currentOpenOrder = () => {
   // return the order
 };
 
-const modifyOrder = (trigger, sl) => {
+const modifyOrder = (sl) => {
   const clientInstance = client(testnet);
   clientInstance
     .setTradingStop({
       category: "linear",
-      stopLoss: "0.2",
-      symbol: "BTCUSDT",
+      stopLoss: sl,
+      symbol: symbol,
     })
     .then((response) => {
       console.log(response);
@@ -36,13 +37,13 @@ const modifyOrder = (trigger, sl) => {
     });
 };
 
-const cancelOrder = () => {
+const cancelOrder = (orderId) => {
   const clientInstance = client(testnet);
   clientInstance
     .cancelOrder({
       category: "linear",
-      symbol: "BTCUSDT",
-      orderLinkId: "system-trading1",
+      symbol: symbol,
+      orderId: orderId,
     })
     .then((response) => {
       console.log(response);
@@ -52,22 +53,22 @@ const cancelOrder = () => {
     });
 };
 
-const placeOrder = (quantity, trigger, sl, side = "Buy") => {
+const placeOrder = (quantity, trigger, sl, id, side = "Buy") => {
   const clientInstance = client(testnet);
 
-  clientInstance
+  return clientInstance
     .submitOrder({
       category: "linear",
       symbol: process.env.DEFAULT_SYMBOL,
       side: side,
       qty: quantity,
-      orderType: "Market",
+      orderType: "limit",
       timeInForce: "PostOnly",
-      price: trigger.toString(),
+      triggerPrice: trigger.toString(),
       stopLoss: sl.toString(),
+      triggerDirection: "1",
       testnet: testnet,
       // orderLinkId: "system-trading3",
-      // triggerDirection: "1",
     })
     .then((response) => {
       console.log(response);
@@ -208,7 +209,7 @@ const activeOrders = (testnet) => {
 // placeOrder(true);
 // console.log(await placeOrder(68600, 68400, true));
 
-export const trade = {
+const trade = {
   activeOrders,
   tradeHistory,
   openPositions,
@@ -217,3 +218,5 @@ export const trade = {
   modifyOrder,
   currentOpenOrder,
 };
+
+export default trade;
