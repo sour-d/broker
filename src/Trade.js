@@ -20,9 +20,9 @@ const currentOpenOrder = () => {
   // return the order
 };
 
-const modifyOrder = (sl) => {
+const modifyOrder = async (sl) => {
   const clientInstance = client(testnet);
-  clientInstance
+  return clientInstance
     .setTradingStop({
       category: "linear",
       stopLoss: sl,
@@ -37,9 +37,9 @@ const modifyOrder = (sl) => {
     });
 };
 
-const cancelOrder = (orderId) => {
+const cancelOrder = async (orderId) => {
   const clientInstance = client(testnet);
-  clientInstance
+  return clientInstance
     .cancelOrder({
       category: "linear",
       symbol: symbol,
@@ -47,13 +47,14 @@ const cancelOrder = (orderId) => {
     })
     .then((response) => {
       console.log(response);
+      return response;
     })
     .catch((error) => {
       console.error(error);
     });
 };
 
-const placeOrder = (quantity, trigger, sl, side = "Buy") => {
+const placeOrder = async (quantity, trigger, sl, side = "Buy") => {
   const clientInstance = client(testnet);
 
   return clientInstance
@@ -77,6 +78,7 @@ const placeOrder = (quantity, trigger, sl, side = "Buy") => {
         "Order placed successfully",
         JSON.stringify(response, null, 2)
       );
+      return response;
     })
     .catch((error) => {
       console.error(error);
