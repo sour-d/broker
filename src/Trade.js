@@ -53,7 +53,7 @@ const cancelOrder = (orderId) => {
     });
 };
 
-const placeOrder = (quantity, trigger, sl, id, side = "Buy") => {
+const placeOrder = (quantity, trigger, sl, side = "Buy") => {
   const clientInstance = client(testnet);
 
   return clientInstance
@@ -61,13 +61,14 @@ const placeOrder = (quantity, trigger, sl, id, side = "Buy") => {
       category: "linear",
       symbol: process.env.DEFAULT_SYMBOL,
       side: side,
-      qty: quantity,
-      orderType: "limit",
+      qty: quantity.toString(),
+      orderType: "Market",
       timeInForce: "PostOnly",
       triggerPrice: trigger.toString(),
-      stopLoss: sl.toString(),
       triggerDirection: "1",
+      stopLoss: sl.toString(),
       testnet: testnet,
+      // orderLinkId: "system-trading4",
       // orderLinkId: "system-trading3",
     })
     .then((response) => {
@@ -207,7 +208,7 @@ const activeOrders = (testnet) => {
 };
 
 // placeOrder(true);
-// console.log(await placeOrder(68600, 68400, true));
+// console.log(await placeOrder(0.1, 69200, 68900));
 
 const trade = {
   activeOrders,
