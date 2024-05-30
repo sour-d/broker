@@ -2,6 +2,8 @@ import { RestClientV5 } from "bybit-api";
 import dotenv from "dotenv";
 dotenv.config();
 
+const testnet = process.env.USE_TESTNET === "true";
+
 const client = (testnet) => {
   const args = {
     testnet: testnet,
@@ -17,7 +19,7 @@ const currentOpenOrder = () => {
   // return the order
 };
 
-const modifyOrder = (trigger, sl, testnet = true) => {
+const modifyOrder = (trigger, sl) => {
   const clientInstance = client(testnet);
   clientInstance
     .setTradingStop({
@@ -34,7 +36,7 @@ const modifyOrder = (trigger, sl, testnet = true) => {
     });
 };
 
-const cancelOrder = (testnet) => {
+const cancelOrder = () => {
   const clientInstance = client(testnet);
   clientInstance
     .cancelOrder({
@@ -50,22 +52,22 @@ const cancelOrder = (testnet) => {
     });
 };
 
-const placeOrder = (trigger, sl, testnet = true) => {
+const placeOrder = (quantity, trigger, sl, side = "Buy") => {
   const clientInstance = client(testnet);
 
   clientInstance
     .submitOrder({
-      testnet: testnet,
       category: "linear",
-      symbol: "BTCUSDT",
-      side: "Buy",
+      symbol: process.env.DEFAULT_SYMBOL,
+      side: side,
+      qty: quantity,
       orderType: "Market",
-      qty: "0.2",
       timeInForce: "PostOnly",
-      // orderLinkId: "system-trading3",
       price: trigger.toString(),
-      // triggerDirection: "1",
       stopLoss: sl.toString(),
+      testnet: testnet,
+      // orderLinkId: "system-trading3",
+      // triggerDirection: "1",
     })
     .then((response) => {
       console.log(response);
