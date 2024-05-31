@@ -192,7 +192,6 @@ const activeOrders = async (testnet) => {
 
 const trade = {
   activeOrders,
-  activeOrderHistory,
   openPositions,
   placeOrder,
   cancelOrder,
