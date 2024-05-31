@@ -196,7 +196,6 @@ const trade = {
   placeOrder,
   cancelOrder,
   modifyPosition,
-  currentOpenOrder,
   tradeHistory,
 };
 
