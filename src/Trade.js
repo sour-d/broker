@@ -20,7 +20,7 @@ const currentOpenOrder = () => {
   // return the order
 };
 
-const modifyOrder = async (sl) => {
+const modifyPosition = async (sl) => {
   const clientInstance = client(testnet);
   return clientInstance
     .setTradingStop({
@@ -31,6 +31,29 @@ const modifyOrder = async (sl) => {
     .then((response) => {
       console.log(response);
       return response;
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+};
+
+const modifyOrder = async (orderId, quantity, trigger, sl, side = "Buy") => {
+  const clientInstance = client(testnet);
+  clientInstance
+    .submitOrder({
+      category: "linear",
+      orderType: "Market",
+      side: side,
+      symbol: symbol,
+      orderId: orderId,
+      qty: quantity.toString(),
+      triggerPrice: trigger.toString(),
+      triggerDirection: "1",
+      stopLoss: sl.toString(),
+      timeInForce: "PostOnly",
+    })
+    .then((response) => {
+      console.log(response);
     })
     .catch((error) => {
       console.error(error);
@@ -68,12 +91,8 @@ const placeOrder = async (quantity, trigger, sl, side = "Buy") => {
       triggerPrice: trigger.toString(),
       triggerDirection: "1",
       stopLoss: sl.toString(),
-      testnet: testnet,
-      // orderLinkId: "system-trading4",
-      // orderLinkId: "system-trading3",
     })
     .then((response) => {
-      console.log(response);
       console.log(
         "Order placed successfully",
         JSON.stringify(response, null, 2)
@@ -211,7 +230,10 @@ const activeOrders = (testnet) => {
 };
 
 // console.log(await tradeHistory());
-// console.log(await modifyOrder(68300));
+// console.log(
+//   await modifyOrder("d7b0589d-940a-460a-bab4-bf1b2b592ab2", 100, 0.044, 0.04)
+// );
+// console.log(await placeOrder(100, 0.05, 0.03, "Buy"));
 
 const trade = {
   activeOrders,
@@ -219,7 +241,7 @@ const trade = {
   openPositions,
   placeOrder,
   cancelOrder,
-  modifyOrder,
+  modifyPosition,
   currentOpenOrder,
 };
 
