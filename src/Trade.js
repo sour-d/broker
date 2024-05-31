@@ -15,11 +15,6 @@ const client = (testnet) => {
   return new RestClientV5(args);
 };
 
-const currentOpenOrder = () => {
-  // get the current order
-  // return the order
-};
-
 const modifyPosition = async (sl) => {
   const clientInstance = client(testnet);
   return clientInstance
@@ -29,7 +24,6 @@ const modifyPosition = async (sl) => {
       symbol: symbol,
     })
     .then((response) => {
-      console.log(response);
       return response;
     })
     .catch((error) => {
@@ -39,7 +33,7 @@ const modifyPosition = async (sl) => {
 
 const modifyOrder = async (orderId, quantity, trigger, sl, side = "Buy") => {
   const clientInstance = client(testnet);
-  clientInstance
+  return clientInstance
     .submitOrder({
       category: "linear",
       orderType: "Market",
@@ -83,7 +77,7 @@ const placeOrder = async (quantity, trigger, sl, side = "Buy") => {
   return clientInstance
     .submitOrder({
       category: "linear",
-      symbol: process.env.DEFAULT_SYMBOL,
+      symbol: symbol,
       side: side,
       qty: quantity.toString(),
       orderType: "Market",
@@ -104,51 +98,15 @@ const placeOrder = async (quantity, trigger, sl, side = "Buy") => {
     });
 };
 
-const openPositions = () => {
+const openPositions = async () => {
   const clientInstance = client(testnet);
 
-  clientInstance
+  return clientInstance
     .getPositionInfo({
       category: "linear",
-      symbol: "BTCUSDT",
+      symbol: symbol,
     })
     .then((response) => {
-      //   {
-      //   "symbol": "BTCUSDT",
-      //   "leverage": "10",
-      //   "autoAddMargin": 0,
-      //   "avgPrice": "0",
-      //   "liqPrice": "",
-      //   "riskLimitValue": "2000000",
-      //   "takeProfit": "",
-      //   "positionValue": "",
-      //   "isReduceOnly": false,
-      //   "tpslMode": "Full",
-      //   "riskId": 1,
-      //   "trailingStop": "0",
-      //   "unrealisedPnl": "",
-      //   "markPrice": "67662",
-      //   "adlRankIndicator": 0,
-      //   "cumRealisedPnl": "-3448.20943244",
-      //   "positionMM": "0",
-      //   "createdTime": "1716953289099",
-      //   "positionIdx": 0,
-      //   "positionIM": "0",
-      //   "seq": 9242982939,
-      //   "updatedTime": "1717003686728",
-      //   "side": "",
-      //   "bustPrice": "",
-      //   "positionBalance": "0",
-      //   "leverageSysUpdatedTime": "",
-      //   "curRealisedPnl": "0",
-      //   "size": "0",
-      //   "positionStatus": "Normal",
-      //   "mmrSysUpdatedTime": "",
-      //   "stopLoss": "",
-      //   "tradeMode": 0,
-      //   "sessionAvgPrice": ""
-      // }
-      console.log(JSON.stringify(response.result, null, 2));
       const data = response.result.list[0];
       return {
         symbol: data.symbol,
@@ -209,19 +167,16 @@ const tradeHistory = async () => {
     });
 };
 
-const activeOrders = (testnet) => {
+const activeOrders = async (testnet) => {
   const clientInstance = client(testnet);
 
-  clientInstance
+  return clientInstance
     .getActiveOrders({
       category: "linear",
-      symbol: "BTCUSDT",
+      symbol: symbol,
       openOnly: 0,
-      limit: 1,
     })
     .then((response) => {
-      console.log(response);
-      console.log(JSON.stringify(response.result.list[0], null, 2));
       return response.result.list;
     })
     .catch((error) => {
@@ -229,7 +184,7 @@ const activeOrders = (testnet) => {
     });
 };
 
-// console.log(await tradeHistory());
+// console.log(await activeOrderHistory());
 // console.log(
 //   await modifyOrder("d7b0589d-940a-460a-bab4-bf1b2b592ab2", 100, 0.044, 0.04)
 // );
@@ -237,12 +192,13 @@ const activeOrders = (testnet) => {
 
 const trade = {
   activeOrders,
-  tradeHistory,
+  activeOrderHistory,
   openPositions,
   placeOrder,
   cancelOrder,
   modifyPosition,
   currentOpenOrder,
+  tradeHistory,
 };
 
 export default trade;
