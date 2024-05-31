@@ -63,7 +63,6 @@ const cancelOrder = async (orderId) => {
       orderId: orderId,
     })
     .then((response) => {
-      console.log(response);
       return response;
     })
     .catch((error) => {
@@ -87,10 +86,6 @@ const placeOrder = async (quantity, trigger, sl, side = "Buy") => {
       stopLoss: sl.toString(),
     })
     .then((response) => {
-      console.log(
-        "Order placed successfully",
-        JSON.stringify(response, null, 2)
-      );
       return response;
     })
     .catch((error) => {
