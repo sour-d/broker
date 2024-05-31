@@ -12,7 +12,7 @@ export default class LiveStream extends EventEmitter {
   constructor(symbols = [], testnet) {
     super();
     this.url = testnet
-      ? "wss://stream-testnet.bybit.com/v5/public/spot"
+      ? "wss://stream-testnet.bybit.com/v5/public/linear"
       : "wss://stream.bybit.com/v5/public/linear";
     this.ws = null;
     this.subscribed = {};

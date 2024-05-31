@@ -25,7 +25,7 @@ const modifyOrder = async (sl) => {
   return clientInstance
     .setTradingStop({
       category: "linear",
-      stopLoss: sl,
+      stopLoss: sl.toString(),
       symbol: symbol,
     })
     .then((response) => {
@@ -210,7 +210,7 @@ const activeOrders = (testnet) => {
 };
 
 // placeOrder(true);
-// console.log(await placeOrder(0.1, 69200, 68900));
+console.log(await modifyOrder(68300));
 
 const trade = {
   activeOrders,
