@@ -167,7 +167,7 @@ const tradeHistory = async () => {
     });
 };
 
-const activeOrders = async (testnet) => {
+const activeOrders = async () => {
   const clientInstance = client(testnet);
 
   return clientInstance
