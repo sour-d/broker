@@ -85,7 +85,7 @@ const placeOrder = async (quantity, trigger, sl, side = "Buy") => {
     });
 };
 
-const openPositions = (testnet) => {
+const openPositions = () => {
   const clientInstance = client(testnet);
 
   clientInstance
@@ -153,15 +153,16 @@ const openPositions = (testnet) => {
     });
 };
 
-const tradeHistory = async (testnet) => {
+const tradeHistory = async () => {
   const clientInstance = client(testnet);
 
-  return await clientInstance
+  return clientInstance
     .getHistoricOrders({
       category: "linear",
+      symbol: symbol,
+      limit: 10,
     })
     .then((response) => {
-      console.log(JSON.stringify(response.result.list[0], null, 2));
       return response.result.list.map((order) => {
         return {
           symbol: order.symbol,
@@ -209,8 +210,8 @@ const activeOrders = (testnet) => {
     });
 };
 
-// placeOrder(true);
-console.log(await modifyOrder(68300));
+// console.log(await tradeHistory());
+// console.log(await modifyOrder(68300));
 
 const trade = {
   activeOrders,
