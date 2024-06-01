@@ -1,99 +1,58 @@
-import WebSocket from "ws";
-import EventEmitter from "events";
+import { EventEmitter } from "events";
 
-const getMessage = (symbol, timeFrame) => {
-  return JSON.stringify({
-    op: "subscribe",
-    args: [`kline.${timeFrame}.${symbol}`],
-  });
-};
+import { WebsocketClient } from "bybit-api";
 
-export default class LiveStream extends EventEmitter {
-  constructor(symbols = [], testnet) {
+export default class LiveQuoteProvider extends EventEmitter {
+  timeFrameInMs;
+  intervalId;
+  onTimeout;
+
+  constructor(onTimeout, testnet = true) {
     super();
-    this.url = testnet
-      ? "wss://stream-testnet.bybit.com/v5/public/linear"
-      : "wss://stream.bybit.com/v5/public/linear";
-    this.ws = null;
-    this.subscribed = {};
-
-    this._connectWebsocket();
-    this.#subscribeAll(symbols);
-  }
-
-  _connectWebsocket() {
-    this.ws = new WebSocket(this.url);
-
-    this.ws.onopen = this._onOpen.bind(this);
-    this.ws.onmessage = this._onMessage.bind(this);
-    this.ws.onerror = this._onError.bind(this);
-  }
-
-  _onOpen() {
-    console.log("Websocket connection established");
-  }
-
-  _onMessage(message) {
-    const data = JSON.parse(message.data);
-    if (data.op === "subscribe") return;
-
-    const topic = data.topic;
-    const olhc = data.data[0];
-
-    if (data.success === false && data.ret_msg.startsWith("Invalid symbol :")) {
-      const topic = data.ret_msg
-        .split(":")[1]
-        .replace(/\[/g, "")
-        .replace(/\]/g, "");
-      return this.emit(topic, { type: "error", message: data.ret_msg, topic });
-    }
-    if (!olhc.confirm) return;
-    this.emit(topic, {
-      type: "quote",
-      data: {
-        open: +olhc.open,
-        close: +olhc.close,
-        high: +olhc.high,
-        low: +olhc.low,
-        volume: +olhc.volume,
-      },
-      topic,
+    this.onTimeout = onTimeout;
+    this.testnet = testnet;
+    const wsClient = new WebsocketClient({
+      market: "v5",
+      testnet: this.testnet,
     });
-  }
-
-  _onError(error) {
-    console.error("Websocket error:", error);
-  }
-
-  #subscribeAll(symbols) {
-    symbols.forEach(({ symbol, timeFrame }) => {
-      this.subscribe(symbol, timeFrame);
+    wsClient.on("update", ({ type, topic, data: quotes, ts, wsKey }) => {
+      quotes.forEach((quote) => {
+        if (!quote.confirm) return;
+        const liveQuoteObj = {
+          type: "quote",
+          data: {
+            open: +quote.open,
+            close: +quote.close,
+            high: +quote.high,
+            low: +quote.low,
+            volume: +quote.volume,
+          },
+        };
+        this.emit(topic, liveQuoteObj);
+      });
     });
+    wsClient.on("open", (data) => {
+      console.log("connection opened open:", data.wsKey);
+    });
+    wsClient.on("response", (data) => {
+      console.log("log response: ", JSON.stringify(data, null, 2));
+    });
+    wsClient.on("reconnect", ({ wsKey }) => {
+      console.log("ws automatically reconnecting.... ", wsKey);
+    });
+    wsClient.on("reconnected", (data) => {
+      console.log("ws has reconnected ", data?.wsKey);
+    });
+    wsClient.on("close", (data) => {
+      console.log("ws has been closed ", data?.wsKey);
+      this.onTimeout();
+    });
+
+    this.wsClient = wsClient;
   }
 
   subscribe(symbol, timeFrame) {
-    const topic = `kline.${timeFrame}.${symbol}`;
-    const message = getMessage(symbol, timeFrame);
-
-    if (this.subscribed[topic]) {
-      return;
-    }
-
-    if (!this.ws.readyState) {
-      return setTimeout(() => this.subscribe(symbol, timeFrame), 5000);
-    }
-
-    this.ws.send(message);
-    this.subscribed[topic] = { symbol, timeFrame, retry: 0 };
-  }
-
-  unsubscribe(symbol, timeFrame) {
-    if (!this.ws.readyState) {
-      return setTimeout(() => this.unsubscribe(symbol, timeFrame), 5000);
-    }
-
-    const topic = `kline.${timeFrame}.${symbol}`;
-    const message = JSON.stringify({ op: "unsubscribe", args: [topic] });
-    this.ws.send(message);
+    const topic = `kline.${timeFrame}.${symbol.toUpperCase()}`;
+    this.wsClient.subscribeV5(topic, "linear");
   }
 }
